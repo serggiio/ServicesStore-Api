@@ -35,6 +35,17 @@ builder.Services.AddDbContext<ContextBook>(options =>
 var app = builder.Build();
 app.UseCustomExceptionHandler();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<ContextBook>();
+    if (context.Database.GetPendingMigrations().Any())
+    {
+        context.Database.Migrate();
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

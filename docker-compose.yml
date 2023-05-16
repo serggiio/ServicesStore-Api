@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+  servicesstore.api.authors:
+    image: ${DOCKER_REGISTRY-}servicesstoreapiauthors
+    build:
+      context: .
+      dockerfile: ServicesStore.Api.Authors/Dockerfile
+    depends_on:
+      - servicesstore-db
+    networks:
+      - SERVICES-STORE-NET
+
+  servicesstore.api.book:
+    image: ${DOCKER_REGISTRY-}servicesstoreapibook
+    build:
+      context: .
+      dockerfile: ServicesStore.Api.Book/Dockerfile
+    depends_on:
+      - servicesstore-db
+    networks: 
+      - SERVICES-STORE-NET
+
+  servicesstore-db:
+    container_name: servicesstore-db
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    restart: always
+    ports:
+      - 1433:1433
+    environment:
+        SA_PASSWORD: "S3cur3P@ssW0rd!"
+        ACCEPT_EULA: "Y"
+    networks:
+      - SERVICES-STORE-NET
+
+networks:
+  SERVICES-STORE-NET:
+    external: false
